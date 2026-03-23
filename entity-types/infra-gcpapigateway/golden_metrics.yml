@@ -1,0 +1,42 @@
+requestsRate:
+  title: Requests per second
+  unit: REQUESTS_PER_SECOND
+  queries:
+    gcp:
+      select: rate(sum(gcp.apigateway.api.request_count), 1 minute) / 60
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: rate(sum(`api.Requests`), 1 minute) / 60
+      from: GcpApiGatewaySample
+      eventId: entityGuid
+      eventName: entityName
+totalLatency:
+  title: Total latency
+  unit: MS
+  queries:
+    gcp:
+      select: average(gcp.apigateway.api.request_latencies) / 1000
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: average(`api.RequestLatencies`) / 1000
+      from: GcpApiGatewaySample
+      eventId: entityGuid
+      eventName: entityName
+errorRate:
+  title: Error rate
+  unit: PERCENTAGE
+  queries:
+    gcp:
+      select: filter(sum(gcp.apigateway.api.request_count), WHERE response_code_class NOT LIKE '2xx') * 100 / sum(gcp.apigateway.api.request_count)
+      from: Metric
+      eventId: entity.guid
+      eventName: entity.name
+    gcpSample:
+      select: filter(sum(`api.Requests`), WHERE response_code_class NOT LIKE '2xx') * 100 / sum(`api.Requests`)
+      from: GcpApiGatewaySample
+      eventId: entityGuid
+      eventName: entityName
